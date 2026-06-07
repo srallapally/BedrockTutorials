@@ -1,6 +1,7 @@
 # setup/create_google_provider.py
 import argparse
 
+from botocore.exceptions import ClientError
 from bedrock_agentcore.services.identity import IdentityClient
 
 
@@ -14,17 +15,23 @@ def main():
     args = parser.parse_args()
 
     identity_client = IdentityClient(args.region)
-    provider = identity_client.create_oauth2_credential_provider({
-        "name": "google-provider",
-        "credentialProviderVendor": "GoogleOauth2",
-        "oauth2ProviderConfigInput": {
-            "googleOauth2ProviderConfig": {
-                "clientId": args.client_id,
-                "clientSecret": args.client_secret
+    try:
+        provider = identity_client.create_oauth2_credential_provider({
+            "name": "google-provider",
+            "credentialProviderVendor": "GoogleOauth2",
+            "oauth2ProviderConfigInput": {
+                "googleOauth2ProviderConfig": {
+                    "clientId": args.client_id,
+                    "clientSecret": args.client_secret
+                }
             }
-        }
-    })
-    print(f"Created provider: {provider}")
+        })
+        print(f"Created provider: {provider}")
+    except ClientError as e:
+        if "already exists" in str(e):
+            print("Provider google-provider already exists — skipping creation.")
+        else:
+            raise
 
 
 if __name__ == "__main__":

@@ -94,38 +94,20 @@ fi
 
 echo ""
 echo "=== Step 4: Enable data event selectors ==="
-# AWS::Bedrock::AgentAlias   — InvokeAgent       → v3 agent_invocation
-# AWS::Lambda::Function      — Invoke            → links Bedrock → tool Lambda call chain
-# AWS::SecretsManager::Secret— GetSecretValue    → v3 resource_access for api_key path
-#
-# Note: AWS::Bedrock::KnowledgeBase and AWS::Bedrock::Guardrail are control-plane
-# resource types and are NOT valid CloudTrail data event selectors. KB and guardrail
-# evaluation evidence comes from Bedrock model invocation logs (Stream 2) and the
-# front door Lambda trace output instead.
+# Lambda Invoke is the only data event useful here.
+# InvokeAgent and GetSecretValue are MANAGEMENT events — captured by the
+# trail automatically without any selector. No Bedrock resource types are
+# valid advanced event selector data event types.
 
 aws cloudtrail put-event-selectors \
     --trail-name "${TRAIL_NAME}" \
     --region "${AWS_REGION}" \
     --advanced-event-selectors '[
         {
-            "Name": "BedrockAgentAlias",
-            "FieldSelectors": [
-                {"Field": "eventCategory", "Equals": ["Data"]},
-                {"Field": "resources.type", "Equals": ["AWS::Bedrock::AgentAlias"]}
-            ]
-        },
-        {
             "Name": "LambdaInvoke",
             "FieldSelectors": [
                 {"Field": "eventCategory", "Equals": ["Data"]},
                 {"Field": "resources.type", "Equals": ["AWS::Lambda::Function"]}
-            ]
-        },
-        {
-            "Name": "SecretsManagerGetSecretValue",
-            "FieldSelectors": [
-                {"Field": "eventCategory", "Equals": ["Data"]},
-                {"Field": "resources.type", "Equals": ["AWS::SecretsManager::Secret"]}
             ]
         }
     ]'
@@ -135,13 +117,15 @@ echo "=== CloudTrail setup complete ==="
 echo "Trail:        ${TRAIL_NAME}"
 echo "Bucket:       s3://${TRAIL_BUCKET}"
 echo ""
-echo "Events captured:"
-echo "  InvokeAgent (AgentAlias)         → v3 agent_invocation"
-echo "  Invoke (Lambda)                   → tool Lambda call chain linkage"
-echo "  GetSecretValue (SecretsManager)   → v3 resource_access for api_key path"
+echo "Data event selector active:"
+echo "  Lambda Invoke    → explicit data event (Bedrock → tool Lambda call)"
 echo ""
-echo "KB and guardrail evidence: comes from Bedrock model invocation logs (Stream 2)"
-echo "and front door Lambda trace output — not CloudTrail data events."
+echo "Management events captured by default (no selector needed):"
+echo "  InvokeAgent      → who invoked which agent alias (bedrock-agent-runtime)"
+echo "  GetSecretValue   → credential access for api_key path (secretsmanager)"
+echo "  CreateAgent, CreateGuardrail, etc. → control-plane changes"
+echo ""
+echo "KB and guardrail evidence: Bedrock model invocation logs + front door Lambda trace."
 echo ""
 echo "Note: Lambda data events are high-volume in active accounts."
 echo "Scope Lambda selectors to the tool handler ARN in production:"

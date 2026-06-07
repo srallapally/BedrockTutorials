@@ -69,7 +69,16 @@ cat > /tmp/bedrock-logging-policy.json << JSON
         "logs:CreateLogStream",
         "logs:PutLogEvents"
       ],
-      "Resource": "arn:aws:logs:${AWS_REGION}:${AWS_ACCOUNT_ID}:log-group:${LOG_GROUP}:*"
+      "Resource": [
+        "arn:aws:logs:${AWS_REGION}:${AWS_ACCOUNT_ID}:log-group:${LOG_GROUP}",
+        "arn:aws:logs:${AWS_REGION}:${AWS_ACCOUNT_ID}:log-group:${LOG_GROUP}:*"
+      ]
+    },
+    {
+      "Sid": "AllowBedrockDescribeLogGroup",
+      "Effect": "Allow",
+      "Action": "logs:DescribeLogGroups",
+      "Resource": "*"
     }
   ]
 }
@@ -101,6 +110,9 @@ echo "Role ARN: ${BEDROCK_LOGGING_ROLE_ARN}"
 
 echo ""
 echo "=== Step 3: Enable model invocation logging (metadata only) ==="
+# Wait for IAM role to propagate before Bedrock validates permissions.
+echo "Waiting 15 seconds for IAM propagation..."
+sleep 15
 # textDataDeliveryEnabled=false  — prompts and responses are NOT logged.
 # imageDataDeliveryEnabled=false — image content is NOT logged.
 # embeddingDataDeliveryEnabled=false — embeddings are NOT logged.

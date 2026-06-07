@@ -20,6 +20,8 @@ GUARDRAIL_ID="$(
     aws bedrock create-guardrail \
         --name "${GUARDRAIL_NAME}" \
         --description "IGA tutorial: blocks credential exfiltration and harmful content" \
+        --blocked-input-messaging "This request was blocked by the IGA governance guardrail." \
+        --blocked-outputs-messaging "This response was blocked by the IGA governance guardrail." \
         --content-policy-config '{
             "filtersConfig": [
                 {"type": "HATE",     "inputStrength": "MEDIUM", "outputStrength": "MEDIUM"},
