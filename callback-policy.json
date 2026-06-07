@@ -1,0 +1,20 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "WriteLogs",
+      "Effect": "Allow",
+      "Action": ["logs:CreateLogGroup","logs:CreateLogStream","logs:PutLogEvents"],
+      "Resource": "*"
+    },
+    {
+      "Sid": "AgentCoreIdentity",
+      "Effect": "Allow",
+      "Action": [
+        "bedrock-agentcore:GetWorkloadAccessTokenForUserId",
+        "bedrock-agentcore:CompleteResourceTokenAuth"
+      ],
+      "Resource": "arn:aws:bedrock-agentcore:us-east-1:470686885243:workload-identity-directory/default/workload-identity/*"
+    }
+  ]
+}

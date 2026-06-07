@@ -1,0 +1,45 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Mock Access MCP API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/access/list": {
+      "post": {
+        "summary": "List user access",
+        "description": "Returns mock application accounts and entitlements for a user.",
+        "operationId": "listUserAccess",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_email": {
+                    "type": "string",
+                    "description": "Email address of the user whose access should be listed."
+                  }
+                },
+                "required": ["user_email"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User access response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

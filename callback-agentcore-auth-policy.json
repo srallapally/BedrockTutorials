@@ -1,0 +1,16 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowCompleteAgentCoreOAuth3LOSession",
+      "Effect": "Allow",
+      "Action": "bedrock-agentcore:CompleteResourceTokenAuth",
+      "Resource": [
+        "arn:aws:bedrock-agentcore:us-east-1:470686885243:token-vault/default",
+        "arn:aws:bedrock-agentcore:us-east-1:470686885243:token-vault/default/oauth2credentialprovider/google-provider",
+        "arn:aws:bedrock-agentcore:us-east-1:470686885243:workload-identity-directory/*",
+        "arn:aws:bedrock-agentcore:us-east-1:470686885243:workload-identity-directory/*/workload-identity/iga-bedrock-agent-3lo-workload"
+      ]
+    }
+  ]
+}
