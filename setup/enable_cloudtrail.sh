@@ -94,11 +94,14 @@ fi
 
 echo ""
 echo "=== Step 4: Enable data event selectors ==="
-# Bedrock::AgentAlias   — InvokeAgent        → v3 agent_invocation
-# Bedrock::KnowledgeBase— Retrieve           → corroborates knowledge_base_query
-# Bedrock::Guardrail    — ApplyGuardrail     → corroborates guardrail_evaluation
-# Lambda::Function      — Invoke             → links Bedrock → tool Lambda call chain
-# SecretsManager::Secret— GetSecretValue     → v3 resource_access for api_key credential path
+# AWS::Bedrock::AgentAlias   — InvokeAgent       → v3 agent_invocation
+# AWS::Lambda::Function      — Invoke            → links Bedrock → tool Lambda call chain
+# AWS::SecretsManager::Secret— GetSecretValue    → v3 resource_access for api_key path
+#
+# Note: AWS::Bedrock::KnowledgeBase and AWS::Bedrock::Guardrail are control-plane
+# resource types and are NOT valid CloudTrail data event selectors. KB and guardrail
+# evaluation evidence comes from Bedrock model invocation logs (Stream 2) and the
+# front door Lambda trace output instead.
 
 aws cloudtrail put-event-selectors \
     --trail-name "${TRAIL_NAME}" \
@@ -109,20 +112,6 @@ aws cloudtrail put-event-selectors \
             "FieldSelectors": [
                 {"Field": "eventCategory", "Equals": ["Data"]},
                 {"Field": "resources.type", "Equals": ["AWS::Bedrock::AgentAlias"]}
-            ]
-        },
-        {
-            "Name": "BedrockKnowledgeBase",
-            "FieldSelectors": [
-                {"Field": "eventCategory", "Equals": ["Data"]},
-                {"Field": "resources.type", "Equals": ["AWS::Bedrock::KnowledgeBase"]}
-            ]
-        },
-        {
-            "Name": "BedrockGuardrail",
-            "FieldSelectors": [
-                {"Field": "eventCategory", "Equals": ["Data"]},
-                {"Field": "resources.type", "Equals": ["AWS::Bedrock::Guardrail"]}
             ]
         },
         {
@@ -148,10 +137,11 @@ echo "Bucket:       s3://${TRAIL_BUCKET}"
 echo ""
 echo "Events captured:"
 echo "  InvokeAgent (AgentAlias)         → v3 agent_invocation"
-echo "  Retrieve (KnowledgeBase)          → corroborates knowledge_base_query"
-echo "  ApplyGuardrail (Guardrail)        → corroborates guardrail_evaluation"
 echo "  Invoke (Lambda)                   → tool Lambda call chain linkage"
 echo "  GetSecretValue (SecretsManager)   → v3 resource_access for api_key path"
+echo ""
+echo "KB and guardrail evidence: comes from Bedrock model invocation logs (Stream 2)"
+echo "and front door Lambda trace output — not CloudTrail data events."
 echo ""
 echo "Note: Lambda data events are high-volume in active accounts."
 echo "Scope Lambda selectors to the tool handler ARN in production:"
