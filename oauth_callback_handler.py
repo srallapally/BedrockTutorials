@@ -89,6 +89,17 @@ def lambda_handler(event, context):
 
         logger.info("3LO session binding completed for user_id=%s", user_id)
 
+        # Structured governance event → v3 event_type=token_issuance
+        print(json.dumps({
+            "event_type":          "bedrock_token_request",
+            "user_identity":       user_id,
+            "grant_type":          "authorization_code",
+            "credential_type":     "delegated_oauth",
+            "delegated_principal": user_id,
+            "token_endpoint":      (session_uri[:60] + "...") if len(session_uri) > 60 else session_uri,
+            "success":             True,
+        }))
+
         return {
             "statusCode": 200,
             "headers": {"Content-Type": "text/html"},
@@ -97,6 +108,15 @@ def lambda_handler(event, context):
 
     except Exception as exc:
         logger.error("3LO callback failed: %s", exc)
+        # Structured governance event → v3 event_type=token_issuance (failure)
+        print(json.dumps({
+            "event_type":      "bedrock_token_request",
+            "user_identity":   _decode_query_value(raw_user_id) or "unknown",
+            "grant_type":      "authorization_code",
+            "credential_type": "delegated_oauth",
+            "success":         False,
+            "error_type":      type(exc).__name__,
+        }))
         return {
             "statusCode": 500,
             "headers": {"Content-Type": "application/json"},

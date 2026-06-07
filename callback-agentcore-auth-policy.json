@@ -6,10 +6,10 @@
       "Effect": "Allow",
       "Action": "bedrock-agentcore:CompleteResourceTokenAuth",
       "Resource": [
-        "arn:aws:bedrock-agentcore:us-east-1:470686885243:token-vault/default",
-        "arn:aws:bedrock-agentcore:us-east-1:470686885243:token-vault/default/oauth2credentialprovider/google-provider",
-        "arn:aws:bedrock-agentcore:us-east-1:470686885243:workload-identity-directory/*",
-        "arn:aws:bedrock-agentcore:us-east-1:470686885243:workload-identity-directory/*/workload-identity/iga-bedrock-agent-3lo-workload"
+        "arn:aws:bedrock-agentcore:${AWS_REGION}:${AWS_ACCOUNT_ID}:token-vault/default",
+        "arn:aws:bedrock-agentcore:${AWS_REGION}:${AWS_ACCOUNT_ID}:token-vault/default/oauth2credentialprovider/${OAUTH_PROVIDER_NAME}",
+        "arn:aws:bedrock-agentcore:${AWS_REGION}:${AWS_ACCOUNT_ID}:workload-identity-directory/*",
+        "arn:aws:bedrock-agentcore:${AWS_REGION}:${AWS_ACCOUNT_ID}:workload-identity-directory/*/workload-identity/${WORKLOAD_IDENTITY_NAME}"
       ]
     }
   ]

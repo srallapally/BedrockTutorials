@@ -17,7 +17,7 @@
       "Action": [
         "secretsmanager:GetSecretValue"
       ],
-      "Resource": "arn:aws:secretsmanager:us-east-1:470686885243:secret:iga-bedrock-agent/mock-mcp/api-key-7s386n"
+      "Resource": "${MOCK_API_KEY_SECRET_ARN}"
     }
   ]
 }

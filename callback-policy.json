@@ -14,7 +14,7 @@
         "bedrock-agentcore:GetWorkloadAccessTokenForUserId",
         "bedrock-agentcore:CompleteResourceTokenAuth"
       ],
-      "Resource": "arn:aws:bedrock-agentcore:us-east-1:470686885243:workload-identity-directory/default/workload-identity/*"
+      "Resource": "arn:aws:bedrock-agentcore:${AWS_REGION}:${AWS_ACCOUNT_ID}:workload-identity-directory/default/workload-identity/*"
     }
   ]
 }
