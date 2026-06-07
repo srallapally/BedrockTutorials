@@ -1,15 +1,15 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "Mock Access MCP API",
+    "title": "Mock Policy MCP API",
     "version": "1.0.0"
   },
   "paths": {
-    "/access/list": {
+    "/policy/evaluate": {
       "post": {
-        "summary": "List user access",
-        "description": "Returns mock application accounts and entitlements for a user.",
-        "operationId": "listUserAccess",
+        "summary": "Evaluate access policy risk",
+        "description": "Returns a mock policy risk assessment for a user's entitlement. Requires high session assurance for privileged entitlements.",
+        "operationId": "evaluatePolicy",
         "requestBody": {
           "required": true,
           "content": {
@@ -19,17 +19,21 @@
                 "properties": {
                   "user_email": {
                     "type": "string",
-                    "description": "Email address of the user whose access should be listed."
+                    "description": "Email address of the user whose entitlement is being evaluated."
+                  },
+                  "entitlement": {
+                    "type": "string",
+                    "description": "Entitlement identifier to evaluate, e.g. Salesforce:Admin:Write."
                   }
                 },
-                "required": ["user_email"]
+                "required": ["user_email", "entitlement"]
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "User access response",
+            "description": "Policy evaluation result",
             "content": {
               "application/json": {
                 "schema": {
